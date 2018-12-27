@@ -84,7 +84,7 @@
         (.setEndpoint client endpoint))
       client)))
 
-(def ^{:private true :tag AmazonS3Client}
+(def ^{:tag AmazonS3Client}
   s3-client
   (memoize s3-client*))
 
