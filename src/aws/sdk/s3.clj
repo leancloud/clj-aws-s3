@@ -45,6 +45,12 @@
            com.amazonaws.services.s3.model.UploadPartRequest
            com.amazonaws.services.s3.model.BucketLoggingConfiguration
            com.amazonaws.services.s3.model.SetBucketLoggingConfigurationRequest
+           [com.amazonaws.services.s3.model
+            DeleteObjectsRequest
+            DeleteObjectsResult
+            DeleteObjectsResult$DeletedObject
+            MultiObjectDeleteException
+            ]
            java.util.concurrent.Executors
            java.io.ByteArrayInputStream
            java.io.File
@@ -339,6 +345,11 @@
      :next-key-marker        (.getNextKeyMarker listing)
      :next-version-id-marker (.getNextVersionIdMarker listing)
      :version-id-marker      (.getVersionIdMarker listing)})
+  DeleteObjectsResult$DeletedObject
+  (to-map [obj]
+    {:key (.getKey obj)
+     :delete-marker? (.isDeleteMarker obj)
+     :version-id (.getVersionId obj)})
   CopyObjectResult
   (to-map [result]
     {:etag                    (.getETag result)
@@ -448,6 +459,18 @@
   "Delete an object from an S3 bucket."
   [cred bucket key]
   (.deleteObject (s3-client cred) bucket key))
+
+(defn delete-objects
+  "Delete multiple (unversioned) objects in a batch, returns seq of map.
+   It may throw MultiObjectDeleteException."
+  [cred bucket & ks]
+  (when (seq ks)
+    (let [^DeleteObjectsResult ret
+          (->> (into-array String ks)
+               (.withKeys (DeleteObjectsRequest. bucket))
+               (.deleteObjects (s3-client cred)))]
+      (->> (.getDeletedObjects ret)
+           (map to-map)))))
 
 (defn object-exists?
   "Returns true if an object exists in the supplied bucket and key."
