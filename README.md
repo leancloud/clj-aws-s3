@@ -15,7 +15,7 @@ and update the access control lists (ACLs) for buckets and objects.
 
 Add the following dependency to your `project.clj` file:
 
-    [cn.leancloud/clj-aws-s3 "0.3.11"]
+    [cn.leancloud/clj-aws-s3 "0.3.12-SNAPSHOT"]
 
 ## Example
 
